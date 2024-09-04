@@ -1,0 +1,19 @@
+-- Drop Old tables
+Drop Table files;
+Drop Table word_counts;
+
+--Create a table to store results
+Create Table files(line STRING);
+
+--Load data into the database using a file on your local system (NOT HDFS)
+LOAD DATA LOCAL INPATH '/root/input.txt' INTO Table files;
+
+--Create a new table using data from the files table
+Create Table word_counts AS
+Select word, count(word), AS wordCount FROM
+(Select explode(split(line,' ')) AS word from files) w
+GROUP BY word
+ORDER BY wordCount DESC;
+
+--View result from word_counts
+Select * from word_counts;
